@@ -1,0 +1,313 @@
+#include <iostream>
+#include <ctime>
+#include <chrono>
+
+using namespace std;
+using namespace chrono;
+
+int *quickSort(int *, int);
+bool binarySearch(int *arr, int size, int value);
+
+int main()
+{
+	setlocale(0, "");
+	const int n = 100;
+	srand(time(0));
+	int arr[n], arrSorted[n];
+
+	cout << "1. Создать массив\n";
+	cout << "2. Отсортировать массив\n";
+	cout << "3. Найти максимальный и минимальный элементы массива\n";
+	cout << "4. Найти среднее значение максимального и минимального элементов\n";
+	cout << "5. Найти количество элементов меньших числа a\n";
+	cout << "6. Найти количество элементов больших числа b\n";
+	cout << "7. Поиск заданного числа в массиве\n";
+	cout << "8. Поменять местами элементы массива\n";
+
+Menu: 
+	{
+		cout << "\n";
+		cout << "Введите номер операции: ";
+	}
+
+	  int input;
+	  cin >> input;
+	  switch (input)
+	  {
+
+	  case 1:
+	  {
+		  cout << "\n";
+		  srand(time(0));
+		  for (int i = 0; i < n; i++)
+		  {
+			  arr[i] = rand() % 199 - 99;
+			  cout << arr[i] << " ";
+		  }
+		  for (int i = 0; i < n; i++)
+			  arrSorted[i] = arr[i];
+		  cout << "\n";
+		  goto Menu;
+	  }
+
+	  case 2:
+	  {
+		  cout << "\n";
+		  auto start = chrono::steady_clock::now();
+		  quickSort(arrSorted, n);
+		  auto end = chrono::steady_clock::now();
+		  duration<double> sec = end - start;
+		  for (int i = 0; i < n; i++)
+			  cout << arrSorted[i] << " ";
+		  cout << "\n";
+		  cout << "Время выполнения: " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " микросекунд";
+		  cout << "\n";
+		  goto Menu;
+	  }
+
+	  case 3:
+	  {
+		  cout << "\n";
+		  int max(-100), min(100);
+		  auto start = chrono::steady_clock::now();
+		  for (int i = 0; i < n; i++) 
+		  {
+			  if (arr[i] > max) 
+				  max = arr[i];
+			  if (arr[i] < min) 
+				  min = arr[i];
+		  }
+		  auto end = chrono::steady_clock::now();
+		  cout << "Максимальный элемент: " << max << "\n" << "Минимальный элемент: " << min << "\n" << "Время поиска в неотсортированном массиве: " << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " наносекунд" << endl;
+		  
+		  max = -100, min = 100;
+		  quickSort(arrSorted, n);
+		  auto startA = chrono::steady_clock::now();
+		  for (int i = 0; i < n; i++)
+		  {
+			  if (arrSorted[i] > max)
+				  max = arrSorted[i];
+			  if (arrSorted[i] < min)
+				  min = arrSorted[i];
+		  }
+		  auto endA = chrono::steady_clock::now();
+		  cout << "Время поиска в отсортированном массиве: " << chrono::duration_cast<chrono::nanoseconds>(endA - startA).count() << " наносекунд" << endl;
+		  goto Menu;
+	  }
+
+	  case 4:
+	  {
+		  cout << "\n";
+		  quickSort(arrSorted, n);
+		  int mean = round((arrSorted[0] + arrSorted[99]) / 2);
+		  int count = 0;
+		  cout << "Среднее значение min & max: " << mean << endl;
+		  cout << "Индексы элементов, равных среднему значению: ";
+		  for (int i = 0; i < n; i++)
+		  {
+			  if (arr[i] == mean)
+				  cout << i << " ";
+		  }
+		  auto start = chrono::steady_clock::now();
+		  for (int i = 0; i < n; i++) 
+		  {
+			  if (arr[i] == mean) 
+				  count++;
+		  }
+		  auto end = chrono::steady_clock::now();
+		  duration<double> sec = end - start;
+		  if (count == 0)
+		  {
+			  cout << "таких элементов не найдено" << "\n" << "Время поиска: " << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " наносекунд";
+			  cout << "\n";
+			  goto Menu;
+		  }
+		  cout << "\n";
+		  cout << "Количество элементов: " << count << "\n" << "Время поиска: " << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " наносекунд";
+		  cout << "\n";
+		  goto Menu;
+	  }
+
+	  case 5:
+	  {
+		  int a, countA = 0;
+		  quickSort(arrSorted, n);
+		  cout << "\n" << "Введите число, количество элементов меньше которого вы хотите увидеть: ";
+		  cin >> a;
+		  for (int i = 0; i < n; i++)
+			  if (arrSorted[i] < a)
+				  countA++;
+		  cout << "Количество элементов, меньших введённого числа: " << countA << endl;
+		  goto Menu;
+	  }
+
+	  case 6:
+	  {
+		  int b, countB = 0;
+		  quickSort(arrSorted, n);
+		  cout << "\n" << "Введите число, количество элементов больше которого вы хотите увидеть: ";
+		  cin >> b;
+		  for (int i = 0; i < n; i++)
+		  {
+			  if (arrSorted[i] > b)
+				  countB++;
+		  }
+		  cout << "Количество элементов, больших введённого числа: " << countB << endl;
+		  goto Menu;
+	  }
+
+	  case 7:
+	  {
+		  int SearchVal;
+		  cout << "\nВведите искомое число: ";
+		  cin >> SearchVal;
+		  quickSort(arrSorted, n);
+		  cout << ((binarySearch(arrSorted, n, SearchVal) ? "В массиве присутствует данное число" : "Такого числа нет")) << endl;
+		  auto start = chrono::steady_clock::now();
+		  binarySearch(arrSorted, n, SearchVal);
+		  auto end = chrono::steady_clock::now();
+		  cout << "\nВремя работы бинарного поиска: " << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " наносекунд" << endl;
+
+		  start = chrono::steady_clock::now();
+		  bool flag = false;
+		  for (int i = 0; i < n; i++) 
+		  {
+			  if (arrSorted[i] == SearchVal) 
+			  {
+				  flag = true;
+			  }
+		  }
+		  end = chrono::steady_clock::now();
+		  cout << "Время поиска перебором: ";
+		  cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count() << " наносекунд" << endl;
+		  goto Menu;
+	  }
+
+	  case 8:
+	  {
+		  int m, p;
+		  cout << "\nВведите индексы элементов, которые хотите поменять:" << endl;
+		  cin >> m >> p;
+
+		  while (!(m >= 0 && m < 100 && p >= 0 && p < 100)) 
+		  {
+			  cout << "\nВы ввели несуществующие индексы. Попробуйте снова: ";
+			  cin >> m >> p;
+		  }
+		  auto start = chrono::steady_clock::now();
+		  int j = arr[m];
+		  arr[m] = arr[p];
+		  arr[p] = j;
+		  auto end = chrono::steady_clock::now();
+		  cout << "\nПолученный массив:" << endl;
+		  for (int i = 0; i < n; i++)
+			  cout << arr[i] << " ";
+		  cout << "\nВремя выполнения: " << duration_cast<nanoseconds>(end - start).count() << " наносекунд" << endl;
+		  goto Menu;
+	  }
+
+	  default:
+	  {
+		  exit;
+	  }
+	  }
+}
+
+int *quickSort(int *arr, int size) 
+{
+	double mean = 0;
+	for (int i = 0; i < size; ++i) mean += abs(arr[i]);
+	mean /= size;
+	int refNum = 0, refNumIndex;
+	for (int i = 0; i < size; ++i) 
+	{
+		if (abs(abs(arr[i]) - abs(mean)) < abs(abs(refNum) - abs(mean))) 
+		{
+			refNum = arr[i];
+			refNumIndex = i;
+		}
+	}
+	int countOfLower = 0, countOfHigher = 0;
+	for (int i = 0; i < size; ++i) 
+	{
+		if (i != refNumIndex) 
+		{
+			if (arr[i] >= refNum)
+				countOfHigher++;
+			else countOfLower++;
+		}
+	}
+
+	int *lowerValues = new int[countOfLower];
+	int *higherValues = new int[countOfHigher];
+	int j = 0, k = 0;
+	for (int i = 0; i < size; ++i) 
+	{
+		if (i != refNumIndex) 
+		{
+			if (arr[i] >= refNum) 
+			{
+				higherValues[j] = arr[i];
+				j++;
+			}
+			else 
+			{
+				lowerValues[k] = arr[i];
+				k++;
+			}
+		}
+	}
+	if (countOfLower > 2)
+		quickSort(lowerValues, countOfLower);
+	
+	else if (countOfLower == 2) 
+	{
+		if (lowerValues[0] > lowerValues[1]) 
+		{
+			int t = lowerValues[0];
+			lowerValues[0] = lowerValues[1];
+			lowerValues[1] = t;
+		}
+	}
+	if (countOfHigher > 2)
+		quickSort(higherValues, countOfHigher);
+
+	else if (countOfHigher == 2) 
+	{
+		if (higherValues[0] > higherValues[1]) 
+		{
+			int t = higherValues[0];
+			higherValues[0] = higherValues[1];
+			higherValues[1] = t;
+		}
+	}
+	for (int i = 0; i < countOfLower; ++i) arr[i] = lowerValues[i];
+	arr[countOfLower] = refNum;
+	for (int i = countOfLower + 1; i < size; ++i) arr[i] = higherValues[i - countOfLower - 1];
+	return arr;
+}
+
+bool binarySearch(int *arr, int size, int value) 
+{
+	int middleNumIndex = int(ceil(size / 2.0));
+	int middleNumValue = arr[middleNumIndex - 1];
+	while (size > 2) 
+	{
+		if (value < middleNumValue) 
+		{
+			middleNumIndex -= int(ceil(size / 4.0));
+			middleNumValue = arr[middleNumIndex - 1];
+			size = int(ceil(size / 2.0));
+		}
+		else if (value > middleNumValue) 
+		{
+			middleNumIndex += int(ceil(size / 4.0));
+			middleNumValue = arr[middleNumIndex - 1];
+			size -= int(ceil(size / 2.0));;
+		}
+		else return true;
+	}
+	if (arr[middleNumIndex - 1] == value)
+		return true;
+	return false;
+}
